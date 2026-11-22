@@ -495,11 +495,44 @@ function renderCategory(c) {
 $("#works").addEventListener("click", e => {
   const el = e.target.closest("button.work");
   if (!el || !current) return;
+
   const w = current.works[el.dataset.i];
+
   if (w.type === "video") {
-    el.outerHTML = `<div class="work playing"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(w.youtube)}?autoplay=1&rel=0" title="${esc(w.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>`;
+
+    // Create YouTube iframe
+    const iframe = document.createElement("iframe");
+
+    iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(w.youtube)}?autoplay=1&rel=0`;
+
+    iframe.title = w.title || "YouTube video player";
+
+    // IMPORTANT: Allow YouTube to identify the website
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+
+    iframe.allowFullscreen = true;
+
+    iframe.loading = "eager";
+
+    // Create video container
+    const player = document.createElement("div");
+
+    player.className = "work playing";
+
+    player.appendChild(iframe);
+
+    // Replace thumbnail with video player
+    el.replaceWith(player);
+
   } else {
-    const lb = $("#lb"); $("img", lb).src = w.src; $("img", lb).alt = w.alt || w.title; lb.showModal();
+    const lb = $("#lb");
+
+    $("img", lb).src = w.src;
+    $("img", lb).alt = w.alt || w.title;
+
+    lb.showModal();
   }
 });
 $("#lb").addEventListener("click", e => { if (e.target === e.currentTarget || e.target.id === "lb-close") e.currentTarget.close(); });
