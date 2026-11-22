@@ -31,6 +31,8 @@
   --grid:color-mix(in srgb,var(--text) 2.5%,transparent);     /* faint background grid */
   --glow:color-mix(in srgb,var(--accent) 32%,transparent);  /* hover light */
   --ease:cubic-bezier(.16,1,.3,1);
+  --tool-icon:40px;    /* software logo size (About section) */
+  --tool-w:104px;      /* smallest width of a software tile (tiles stretch to fill the row) */
   --bg-top:color-mix(in srgb,var(--text) 5%,var(--bg));    /* lighter at the top of the page */
   --bg-bottom:color-mix(in srgb,#000 60%,var(--bg));       /* darker towards the bottom */
   --shadow:0 1px 3px rgba(0,0,0,.4);
@@ -116,10 +118,12 @@ footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-s
 .cat-top{padding:48px 0 40px}
 .cat-top h1{font-size:clamp(36px,6vw,72px);margin:16px 0 12px;outline:0}
 .cat-top p{color:var(--muted);max-width:56ch}
-.works{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:clamp(190px,21vw,260px);gap:16px;padding-bottom:48px}
+.works{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-flow:dense;align-items:start;gap:16px;padding-bottom:48px}
 .cat-foot{display:flex;justify-content:center;padding-bottom:96px}
 .work{position:relative;display:block;width:100%;height:100%;padding:0;background:var(--card-2);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;color:inherit;font:inherit;text-align:left;transition:transform 200ms,border-color 200ms}
-.cell:first-child{grid-column:span 2}
+.cell.big{grid-column:span 2;grid-row:span 2;aspect-ratio:auto;align-self:stretch}
+.cell.nat,.work.nat{aspect-ratio:auto;height:auto}
+.work.nat img{height:auto;object-fit:contain}
 button.work{cursor:pointer}
 .work img{width:100%;height:100%;object-fit:cover;transition:transform 300ms}
 button.work:hover img{transform:scale(1.03)}
@@ -157,7 +161,6 @@ header{animation:fade 300ms var(--ease) backwards}
 .btn{position:relative;isolation:isolate}
 .btn::after{content:"";position:absolute;inset:-6px;z-index:-1;pointer-events:none;border:1px solid var(--accent);border-radius:calc(var(--radius) + 5px);box-shadow:0 0 32px var(--glow);opacity:0;transform:scale(.94);transition:opacity 200ms var(--ease),transform 200ms var(--ease)}
 .btn:hover::after,.btn:focus-visible::after{opacity:1;transform:scale(1)}
-.hero-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:64px;align-items:center}
 .rows a{text-decoration:none;transition:background 150ms}
 .rows a:hover{background:var(--card-2)}
 .work{animation:rise 300ms var(--ease) backwards;animation-delay:calc(250ms + var(--i,0) * 40ms)}
@@ -168,14 +171,6 @@ header{animation:fade 300ms var(--ease) backwards}
 .stats b{display:block;font:600 36px/1.1 var(--font-head);color:var(--accent)}
 .stats span{color:var(--muted);font-size:14px}
 .sub{font-size:24px;margin:72px 0 24px}
-.steps{list-style:none;counter-reset:s;display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
-.steps li{padding:20px;border-left:1px solid var(--line)}
-.steps li:first-child{border-left:0}
-.steps li::before{counter-increment:s;content:counter(s);display:block;color:var(--accent);font:600 14px var(--font-head);margin-bottom:12px}
-.steps h3{font-size:18px;margin-bottom:6px}
-.steps p{color:var(--muted);font-size:14px}
-@media (max-width:860px){.hero-grid{grid-template-columns:1fr;gap:40px}.steps{grid-template-columns:1fr}.steps li{border-left:0;border-top:1px solid var(--line)}.steps li:first-child{border-top:0}.stats{grid-template-columns:1fr}.portrait{max-width:300px}}
-
 /* ===== v4 ===== */
 body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-mix(in srgb,var(--text) 1.2%,transparent);--bg-top:color-mix(in srgb,var(--text) 1.5%,var(--bg));--bg-bottom:color-mix(in srgb,#000 70%,var(--bg))}
 .bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;animation:fade 300ms var(--ease) backwards}
@@ -205,7 +200,7 @@ body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-
 .reveal.in{opacity:1;animation:slide 300ms var(--ease) backwards;animation-delay:calc(var(--r,0) * 30ms)}
 .win::before,.cell::before{content:"";position:absolute;inset:-1px;z-index:-1;pointer-events:none;border-radius:calc(var(--radius) + 1px);box-shadow:0 0 0 1px var(--accent),0 0 40px var(--glow);opacity:0;transition:opacity 200ms var(--ease)}
 .win:hover::before,.cell:hover::before{opacity:1}
-.cell{position:relative;isolation:isolate;height:100%;transition:transform 200ms var(--ease)}
+.cell{position:relative;isolation:isolate;aspect-ratio:16/9;transition:transform 200ms var(--ease)}
 .cell:hover{transform:translateY(-4px)}
 .cell:has(.playing):hover{transform:none}
 .cell:hover .work{border-color:var(--accent)}
@@ -213,14 +208,48 @@ body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-
 .work-d b{display:block;font:600 16px/1.3 var(--font-head)}
 .work-d span{display:block;margin-top:4px;color:var(--muted);font-size:14px;line-height:1.5}
 .cell:hover .work-d,.work:focus-visible .work-d{opacity:1;transform:none}
+.win.wide{order:2;grid-column:1/-1;flex-direction:row;align-items:center;min-height:0}
+.win.wide .win-body{flex:1;border-top:0;padding:28px 32px}
+.games{display:grid;gap:32px;padding-bottom:48px}
+.game{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:32px;animation:rise 300ms var(--ease) backwards;animation-delay:calc(250ms + var(--i,0) * 60ms)}
+.game h2{font-size:clamp(26px,3.4vw,40px);margin-bottom:24px}
+.shots{display:grid;grid-template-columns:2fr 1fr;grid-auto-rows:clamp(110px,13vw,170px);gap:12px}
+.shots>:first-child{grid-row:1/span var(--n,2)}
+.shot{position:relative;display:block;width:100%;height:100%;padding:0;background:var(--card-2);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;color:inherit;transition:transform 200ms var(--ease),border-color 200ms}
+button.shot{cursor:pointer}
+button.shot:hover{transform:translateY(-2px);border-color:var(--accent)}
+.shot img{width:100%;height:100%;object-fit:cover;transition:transform 300ms}
+button.shot:hover img{transform:scale(1.03)}
+.game-info{display:grid;grid-template-columns:1fr auto;gap:24px 32px;align-items:end;margin-top:24px}
+.game-info p{color:var(--muted);max-width:64ch}
+.game-info .role{color:var(--text);margin-bottom:6px}
+.game-info .role span{color:var(--accent);margin-right:10px;font-weight:500}
+@media (max-width:860px){
+  .win.wide{flex-direction:column;align-items:stretch}
+  .game{padding:20px}
+  .shots{grid-template-columns:1fr 1fr;grid-auto-rows:150px}
+  .shots>:first-child{grid-column:1/-1;grid-row:auto;height:220px}
+  .game-info{grid-template-columns:1fr}
+}
+@media (max-width:860px){.stats{grid-template-columns:1fr}.portrait{max-width:300px}}
+.tools{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--tool-w),1fr));gap:12px}
+.tools li{position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px 12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--muted);transition:transform 200ms var(--ease),color 200ms,border-color 200ms}
+.tools li::before{content:"";position:absolute;inset:-1px;z-index:-1;pointer-events:none;border-radius:calc(var(--radius) + 1px);box-shadow:0 0 0 1px var(--accent),0 0 32px var(--glow);opacity:0;transition:opacity 200ms var(--ease)}
+.tools li:hover{transform:translateY(-3px);color:var(--accent);border-color:var(--accent)}
+.tools li:hover::before{opacity:1}
+.tools svg,.tools img,.tools .badge{width:var(--tool-icon);height:var(--tool-icon);flex:none}
+.tools svg{fill:currentColor}
+.tools img{object-fit:contain}
+.tools .badge{display:grid;place-items:center;border:2px solid currentColor;border-radius:8px;font:600 calc(var(--tool-icon) * .4)/1 var(--font-head)}
+.tools p{color:var(--text);font-size:13px;line-height:1.3;text-align:center}
 ::view-transition-group(*){animation-duration:550ms;animation-timing-function:cubic-bezier(.22,1,.36,1)}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:350ms}
 
 @media (max-width:860px){
   .wins,.about{grid-template-columns:1fr}
   .win.lead{min-height:340px}
-  .works{grid-template-columns:1fr;grid-auto-rows:220px}
-  .cell:first-child{grid-column:auto}
+  .works{grid-template-columns:1fr}
+  .cell.big{grid-column:auto;grid-row:auto;aspect-ratio:16/9}
   .btn{width:100%;justify-content:center}
   .hero .row{flex-direction:column;align-items:stretch}
   section.block{padding:72px 0}
@@ -240,6 +269,7 @@ body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-
     <nav aria-label="Main">
       <a href="#about">About</a>
       <a href="#work">Work</a>
+      <a href="#games">Games</a>
       <a href="#contact">Contact</a>
     </nav>
   </div>
@@ -273,8 +303,8 @@ body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-
             <div class="rows" id="about-rows"></div>
           </div>
         </div>
-        <h3 class="sub">How a piece gets made</h3>
-        <ol class="steps" id="steps"></ol>
+        <h3 class="sub">Software I use</h3>
+        <ul class="tools" id="tools"></ul>
       </div>
     </section>
 
@@ -305,8 +335,7 @@ body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-
         <p id="cat-blurb"></p>
       </div>
       <div class="works" id="works"></div>
-      <div class="cat-foot"><a class="link back" href="#work"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg>Back to all work</a></div>
-    </div>
+          </div>
   </div>
 </main>
 
@@ -333,19 +362,20 @@ const SITE = {
   headline: "3D environments, VFX and game UI.",
   intro: "I build real-time game art end to end, from modelled scenes to the effects and interface that make them playable. Blender, Substance Painter, Unity, After Effects.",
   about: "Placeholder: write two or three plain sentences about yourself, what you study, and the kind of studio you want to join.",
-  logo: "",                                      // your transparent PNG/typography, e.g. "images/logo.png" (shown in the hero)
-  photo: "",                                     // optional portrait, e.g. "images/me.jpg"
+  logo: "",                                      // your transparent PNG/typography, e.g. "Asset/logo.png" (shown in the hero)
+  photo: "",                                     // optional portrait, e.g. "Asset/me.jpg"
   aboutRows: [                                   // add or remove rows freely
     ["Focus",   "3D Environment Art, Game VFX, UI/UX"],
     ["Status",  "Student, open to internships"]
   ],
-  tools: ["Blender", "Substance Painter", "Unity", "After Effects", "Affinity"],  // also counted in the stats
-  pipeline: [                                    // placeholder steps: rewrite to match how you really work
-    ["Model",     "Blockout and final geometry in Blender."],
-    ["Texture",   "Materials and trims in Substance Painter."],
-    ["Light",     "Scene setup and lighting in Unity."],
-    ["Effects",   "Real-time VFX that sell the moment."],
-    ["Interface", "HUD and menus that fit the world."]
+  tools: [                                       // software logos (also counted in the stats)
+    // To use your own picture: fill img with a file in the Asset folder (PNG, SVG or WebP).
+    // It is fitted into a square, so any size works. Leave img empty to use the built-in logo.
+    { name: "Blender",           img: "" },
+    { name: "Substance Painter", img: "", badge: "Sp" },
+    { name: "Unity",             img: "" },
+    { name: "After Effects",     img: "" },
+    { name: "Affinity",          img: "", badge: "Af" }
   ],
   email: "you@example.com",                      // TODO: your real email
   links: [                                       // TODO: replace with your profiles, remove what you don't use
@@ -360,7 +390,7 @@ const SITE = {
 
    Each category has a list called `works`. One line = one piece.
 
-   PHOTO:  { type:"image", title:"Name", src:"images/env-01.jpg", alt:"what it shows", desc:"Text in the hover window" }
+   PHOTO:  { type:"image", title:"Name", src:"Asset/env-01.png", alt:"what it shows", desc:"Text in the hover window" }
    VIDEO:  { type:"video", title:"Name", youtube:"dQw4w9WgXcQ", desc:"Text in the hover window" }
            (the part after v= in the YouTube link, or after youtu.be/)
 
@@ -368,8 +398,10 @@ const SITE = {
    To REMOVE one: delete its line. To REORDER: move the line.
    The first piece of each category is shown larger, and its
    picture is also used on the Home window.
+   All pieces are shown in 16:9 (photos are cropped to fit); the only
+   exception is images in VFX (see `naturalImages` below).
    Pieces with an empty src / youtube show as a plain placeholder.
-   Put your image files in an `images` folder next to index.html.
+   Put your image files in the `Asset` folder next to index.html.
    ========================================================== */
 const CATEGORIES = [
   {
@@ -388,6 +420,7 @@ const CATEGORIES = [
     id: "vfx",
     title: "VFX Art",
     blurb: "Real-time effects for Unity: impacts, magic, ambience.",
+    naturalImages: true,   // VFX images keep their own ratio. Delete this line to make them 16:9 too
     works: [
       { type:"video", title:"VFX 01", youtube:"zuk6ATf_wEg", desc:"Sasasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssasasasa." },
       { type:"video", title:"VFX 02", youtube:"", desc:"Short description of this piece." },
@@ -405,8 +438,48 @@ const CATEGORIES = [
       { type:"image", title:"UI/UX 02", src:"", alt:"", desc:"Short description of this piece." },
       { type:"image", title:"UI/UX 03", src:"", alt:"", desc:"Short description of this piece." },
       { type:"video", title:"UI/UX 04", youtube:"", desc:"Short description of this piece." },
+      { type:"image", title:"UI/UX 05", src:"", alt:"", desc:"Short description of this piece." },
       { type:"image", title:"UI/UX 05", src:"", alt:"", desc:"Short description of this piece." }
     ]
+  }
+];
+
+/* ==========================================================
+   2b) YOUR GAMES: the 4th window on Home opens this list.
+
+   One block = one game. To ADD a game: copy a whole { ... } block.
+   To REMOVE one: delete its block.
+     title : game title (shown on top)
+     shots : screenshots. The FIRST one is the big slot, the rest are
+             small slots. Add or remove lines as you like.
+             { src:"Asset/game1-a.png", alt:"what it shows" }
+             (empty src = plain placeholder)
+     role  : what you did on this game
+     desc  : short description
+     itch  : your itch.io link for the game
+   ========================================================== */
+const GAMES_INFO = { title: "Games", blurb: "Games I have helped build. Each one lists my role and where to play it." };
+const GAMES = [
+  {
+    title: "Game Title 01",
+    shots: [{ src:"", alt:"" }, { src:"", alt:"" }, { src:"", alt:"" }],
+    role: "3D Environment, VFX",
+    desc: "Short description of the game and what you did on it.",
+    itch: "https://itch.io/"
+  },
+  {
+    title: "Game Title 02",
+    shots: [{ src:"", alt:"" }, { src:"", alt:"" }, { src:"", alt:"" }],
+    role: "UI/UX",
+    desc: "Short description of the game and what you did on it.",
+    itch: "https://itch.io/"
+  },
+  {
+    title: "Game Title 03",
+    shots: [{ src:"", alt:"" }, { src:"", alt:"" }, { src:"", alt:"" }],
+    role: "Game artist",
+    desc: "Short description of the game and what you did on it.",
+    itch: "https://itch.io/"
   }
 ];
 
@@ -429,11 +502,22 @@ if (SITE.logo) {
   $("#logo").innerHTML = `<span class="logo"><img class="lg" src="${esc(SITE.logo)}" alt=""><img src="${esc(SITE.logo)}" alt=""></span>`;
   $("#headline").classList.add("sr");   // headline stays for screen readers and search
 }
+const ICONS = {   // one-colour logos, they follow the page colours
+  "Blender": { box: "0 0 24 24", d: "M12.51 13.214c.046-.8.438-1.506 1.03-2.006a3.424 3.424 0 0 1 2.212-.79c.85 0 1.631.3 2.211.79.592.5.983 1.206 1.028 2.005.045.823-.285 1.586-.865 2.153a3.389 3.389 0 0 1-2.374.938 3.393 3.393 0 0 1-2.376-.938c-.58-.567-.91-1.33-.865-2.152M7.35 14.831c.006.314.106.922.256 1.398a7.372 7.372 0 0 0 1.593 2.757 8.227 8.227 0 0 0 2.787 2.001 8.947 8.947 0 0 0 3.66.76 8.964 8.964 0 0 0 3.657-.772 8.285 8.285 0 0 0 2.785-2.01 7.428 7.428 0 0 0 1.592-2.762 6.964 6.964 0 0 0 .25-3.074 7.123 7.123 0 0 0-1.016-2.779 7.764 7.764 0 0 0-1.852-2.043h.002L13.566 2.55l-.02-.015c-.492-.378-1.319-.376-1.86.002-.547.382-.609 1.015-.123 1.415l-.001.001 3.126 2.543-9.53.01h-.013c-.788.001-1.545.518-1.695 1.172-.154.665.38 1.217 1.2 1.22V8.9l4.83-.01-8.62 6.617-.034.025c-.813.622-1.075 1.658-.563 2.313.52.667 1.625.668 2.447.004L7.414 14s-.069.52-.063.831zm12.09 1.741c-.97.988-2.326 1.548-3.795 1.55-1.47.004-2.827-.552-3.797-1.538a4.51 4.51 0 0 1-1.036-1.622 4.282 4.282 0 0 1 .282-3.519 4.702 4.702 0 0 1 1.153-1.371c.942-.768 2.141-1.183 3.396-1.185 1.256-.002 2.455.41 3.398 1.175.48.391.87.854 1.152 1.367a4.28 4.28 0 0 1 .522 1.706 4.236 4.236 0 0 1-.239 1.811 4.54 4.54 0 0 1-1.035 1.626" },
+  "Unity": { box: "0 0 24 24", d: "m12.9288 4.2939 3.7997 2.1929c.1366.077.1415.2905 0 .3675l-4.515 2.6076a.4192.4192 0 0 1-.4246 0L7.274 6.8543c-.139-.0745-.1415-.293 0-.3675l3.7972-2.193V0L1.3758 5.5977V16.793l3.7177-2.1456v-4.3858c-.0025-.1565.1813-.2682.318-.1838l4.5148 2.6076a.4252.4252 0 0 1 .2136.3676v5.2127c.0025.1565-.1813.2682-.3179.1838l-3.7996-2.1929-3.7178 2.1457L12 24l9.6954-5.5977-3.7178-2.1457-3.7996 2.1929c-.1341.082-.3229-.0248-.3179-.1838V13.053c0-.1565.087-.2956.2136-.3676l4.5149-2.6076c.134-.082.3228.0224.3179.1838v4.3858l3.7177 2.1456V5.5977L12.9288 0Z" },
+  "After Effects": { box: "0 0 128 128", d: "M87 52.4c-7.5.9-7.5 9.2-7.5 9.2h14.9c.1 0 .8-9.2-7.4-9.2zM38.2 63.1H51l-6.4-24.4zM0 0v128h128V0H0zm57.5 88.6L53 72.5H36.2l-4.4 16.1h-9.4l16-54.9v-3.8h12.2l17.3 58.7H57.5zm46-19.6h-24c1.9 19.2 21.2 10 21.2 10v8s-1.3 2.6-14.8 2.6-16.3-18.3-16.3-18.3v-4.7s1.3-22 17.3-22 16.5 14.6 16.5 14.6V69z" }
+};
+$("#tools").innerHTML = SITE.tools.map(t => {
+  const ic = ICONS[t.name];
+  const mark = t.img ? `<img src="${esc(t.img)}" alt="" loading="lazy">`
+    : ic ? `<svg viewBox="${ic.box}" aria-hidden="true"><path d="${ic.d}"/></svg>`
+    : `<span class="badge" aria-hidden="true">${esc(t.badge || t.name.slice(0, 2))}</span>`;
+  return `<li>${mark}<p>${esc(t.name)}</p></li>`;
+}).join("");
 $("#about-text").textContent = SITE.about;
-$("#about-rows").innerHTML = SITE.aboutRows.concat([["Tools", SITE.tools.join(", ")]]).map(r => `<div><span>${esc(r[0])}</span><span>${esc(r[1])}</span></div>`).join("");
+$("#about-rows").innerHTML = SITE.aboutRows.concat([["Tools", SITE.tools.map(t => t.name).join(", ")]]).map(r => `<div><span>${esc(r[0])}</span><span>${esc(r[1])}</span></div>`).join("");
 const pieces = CATEGORIES.reduce((n, c) => n + c.works.length, 0);
 $("#stats").innerHTML = [[CATEGORIES.length, "disciplines"], [pieces, "pieces"], [SITE.tools.length, "tools"]].map(x => `<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
-$("#steps").innerHTML = SITE.pipeline.map(x => `<li><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p></li>`).join("");
 $("#portrait").innerHTML = SITE.photo ? `<img src="${esc(SITE.photo)}" alt="Portrait of ${esc(SITE.name)}">` : `<span class="ph" style="font-size:96px">${esc(SITE.name.charAt(0))}</span>`;
 $("#mail").textContent = SITE.email;
 $("#mail").href = "mailto:" + SITE.email;
@@ -447,7 +531,7 @@ $("#wins").innerHTML = CATEGORIES.map(c => {
     <span class="win-art">${t ? `<img src="${esc(t)}" alt="" loading="lazy">` : ""}</span>
     <span class="win-body"><span><h3>${esc(c.title)}</h3><p>${esc(c.blurb)}</p></span><span class="win-cta">Open work</span></span>
   </a>`;
-}).join("");
+}).join("") + `<a class="win wide glow" href="#games" style="view-transition-name:win-games"><span class="win-body"><span><h3>${esc(GAMES_INFO.title)}</h3><p>${esc(GAMES_INFO.blurb)}</p></span><span class="win-cta">Open games</span></span></a>`;
 
 /* priority switch */
 $("#lead-options").innerHTML = CATEGORIES.map(c => `<button type="button" data-lead="${c.id}" aria-pressed="false">${esc(c.title)}</button>`).join("");
@@ -473,67 +557,72 @@ document.addEventListener("click", e => { if (!panel.hidden && !e.target.closest
 
 /* category view */
 let current = null;
-function workHTML(w, i) {
+function workHTML(w, i, c) {
   const t = thumb(w), title = esc(w.title);
   const playable = w.type === "video" ? !!w.youtube : !!w.src;
+  const nat = c && c.naturalImages && w.type === "image" && !!w.src ? " nat" : "";   // keeps the image's own ratio
   const media = t ? `<img src="${esc(t)}" alt="${esc(w.alt || w.title)}" loading="lazy">` : `<span class="ph">${title}</span>`;
   const play = w.type === "video" && w.youtube ? `<span class="play" aria-hidden="true"></span>` : "";
   const label = `${title}${w.type === "video" && w.youtube ? ", play video" : ""}`;
   const desc = w.desc ? `<span>${esc(w.desc)}</span>` : "";
   const panel = `<span class="work-d"><b>${title}</b>${desc}</span>`;
-  return `<div class="cell">` + (playable
-    ? `<button class="work glow" style="--i:${i}" type="button" data-i="${i}" aria-label="${label}">${media}${play}${panel}</button>`
-    : `<div class="work glow" style="--i:${i}" role="img" aria-label="${title}">${media}${panel}</div>`) + `</div>`;
+  return `<div class="cell${nat}">` + (playable
+    ? `<button class="work glow${nat}" style="--i:${i}" type="button" data-i="${i}" aria-label="${label}">${media}${play}${panel}</button>`
+    : `<div class="work glow${nat}" style="--i:${i}" role="img" aria-label="${title}">${media}${panel}</div>`) + `</div>`;
 }
 function renderCategory(c) {
   current = c;
   $("#cat-title").textContent = c.title;
   $("#cat-blurb").textContent = c.blurb;
-  $("#works").innerHTML = c.works.map(workHTML).join("");
+  $("#works").className = "works";
+  $("#works").innerHTML = c.works.map((w, i) => workHTML(w, i, c)).join("");
+  const first = $("#works .cell");   // the first piece is the big one (needs 3+ pieces to fill the layout)
+  if (first && c.works.length >= 3 && !first.classList.contains("nat")) first.classList.add("big");
   document.title = `${c.title} | ${SITE.name}`;
 }
 $("#works").addEventListener("click", e => {
   const el = e.target.closest("button.work");
   if (!el || !current) return;
-
   const w = current.works[el.dataset.i];
 
   if (w.type === "video") {
-
-    // Create YouTube iframe
+    // Build the YouTube player
     const iframe = document.createElement("iframe");
-
     iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(w.youtube)}?autoplay=1&rel=0`;
-
     iframe.title = w.title || "YouTube video player";
-
-    // IMPORTANT: Allow YouTube to identify the website
+    // Lets YouTube identify the website (avoids player errors on some hosts)
     iframe.referrerPolicy = "strict-origin-when-cross-origin";
-
     iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-
     iframe.allowFullscreen = true;
-
     iframe.loading = "eager";
-
-    // Create video container
     const player = document.createElement("div");
-
     player.className = "work playing";
-
     player.appendChild(iframe);
-
-    // Replace thumbnail with video player
     el.replaceWith(player);
-
   } else {
-    const lb = $("#lb");
-
-    $("img", lb).src = w.src;
-    $("img", lb).alt = w.alt || w.title;
-
-    lb.showModal();
+    const lb = $("#lb"); $("img", lb).src = w.src; $("img", lb).alt = w.alt || w.title; lb.showModal();
   }
+});
+function gameHTML(g, i) {
+  const n = Math.max(2, g.shots.length - 1);
+  const shots = g.shots.map((x, k) => x.src
+    ? `<button class="shot" type="button" data-src="${esc(x.src)}" data-alt="${esc(x.alt || g.title)}" aria-label="View screenshot ${k + 1} of ${esc(g.title)}"><img src="${esc(x.src)}" alt="${esc(x.alt || g.title)}" loading="lazy"></button>`
+    : `<div class="shot"><span class="ph">Screenshot ${k + 1}</span></div>`).join("");
+  return `<article class="game" style="--i:${i}"><h2>${esc(g.title)}</h2><div class="shots" style="--n:${n}">${shots}</div>
+    <div class="game-info"><div><p class="role"><span>My role</span>${esc(g.role)}</p><p>${esc(g.desc)}</p></div><a class="btn" href="${esc(g.itch)}" target="_blank" rel="noopener">Play on itch.io</a></div></article>`;
+}
+function renderGames() {
+  current = null;
+  $("#cat-title").textContent = GAMES_INFO.title;
+  $("#cat-blurb").textContent = GAMES_INFO.blurb;
+  $("#works").className = "games";
+  $("#works").innerHTML = GAMES.map(gameHTML).join("");
+  document.title = `${GAMES_INFO.title} | ${SITE.name}`;
+}
+$("#works").addEventListener("click", e => {
+  const b = e.target.closest("button.shot");
+  if (!b) return;
+  const lb = $("#lb"); $("img", lb).src = b.dataset.src; $("img", lb).alt = b.dataset.alt; lb.showModal();
 });
 $("#lb").addEventListener("click", e => { if (e.target === e.currentTarget || e.target.id === "lb-close") e.currentTarget.close(); });
 
@@ -553,7 +642,7 @@ new ResizeObserver(parMeasure).observe(document.body);
 
 /* slide + fade when sections scroll into view */
 const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
-document.querySelectorAll(".block h2,.lede,.win,.portrait-wrap,.about>div:last-child,.sub,.steps li,.contact-mail,.socials").forEach(el => {
+document.querySelectorAll(".block h2,.lede,.win,.portrait-wrap,.about>div:last-child,.sub,.tools li,.contact-mail,.socials").forEach(el => {
   el.style.setProperty("--r", Math.min([...el.parentElement.children].indexOf(el), 6));
   el.classList.add("reveal");
   io.observe(el);
@@ -575,15 +664,16 @@ let started = false;
 function route() {
   const id = location.hash.slice(1);
   const c = CATEGORIES.find(x => x.id === id);
+  const g = id === "games", v = !!c || g;
   const swap = () => {
-    $("#home").hidden = !!c;
-    $("#cat").hidden = !c;
-    $("#lead-wrap").hidden = !!c;
+    $("#home").hidden = v;
+    $("#cat").hidden = !v;
+    $("#lead-wrap").hidden = v;
     togglePanel(false);
-    document.body.classList.toggle("in-cat", !!c);
-    if (c) {
-      renderCategory(c);
-      $(".cat-top").style.viewTransitionName = "win-" + c.id;
+    document.body.classList.toggle("in-cat", v);
+    if (v) {
+      if (c) renderCategory(c); else renderGames();
+      $(".cat-top").style.viewTransitionName = "win-" + (c ? c.id : "games");
       window.scrollTo({ top: 0, behavior: "instant" });
       $("#cat-title").focus({ preventScroll: true });
     } else {
