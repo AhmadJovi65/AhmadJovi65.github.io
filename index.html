@@ -665,7 +665,16 @@ function route() {
   const id = location.hash.slice(1);
   const c = CATEGORIES.find(x => x.id === id);
   const g = id === "games", v = !!c || g;
-  const swap = () => {
+const swap = () => {
+
+    // STOP YOUTUBE VIDEO WHEN LEAVING CATEGORY
+    if (!v) {
+      document.querySelectorAll("#works iframe").forEach(iframe => {
+        iframe.src = "about:blank";
+        iframe.remove();
+      });
+    }
+
     $("#home").hidden = v;
     $("#cat").hidden = !v;
     $("#lead-wrap").hidden = v;
