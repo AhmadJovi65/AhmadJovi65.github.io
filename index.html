@@ -38,6 +38,7 @@
   --shadow:0 1px 3px rgba(0,0,0,.4);
   --font-head:"Space Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --portrait-width: 460px; /* ukuran lebar foto profile */
 }
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
@@ -100,7 +101,15 @@ section.block>.wrap>h2{margin-bottom:12px}
 .win-cta{color:var(--accent);white-space:nowrap;font-weight:500}
 
 /* about */
-.about{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:48px;margin-top:40px}
+.about{
+  display:grid;
+  grid-template-columns:var(--portrait-width) minmax(0,1fr);
+
+  column-gap:5px; /* Jarak foto dengan kolom informasi */
+  row-gap:24px;    /* Jarak vertikal saat layout mobile */
+
+  margin-top:40px; /* Jarak dari judul About */
+}
 .about p{color:var(--muted);max-width:52ch}
 .rows{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
 .rows>*{display:flex;justify-content:space-between;gap:24px;padding:16px 20px;border-top:1px solid var(--line)}
@@ -164,8 +173,20 @@ header{animation:fade 300ms var(--ease) backwards}
 .rows a{text-decoration:none;transition:background 150ms}
 .rows a:hover{background:var(--card-2)}
 .work{animation:rise 300ms var(--ease) backwards;animation-delay:calc(250ms + var(--i,0) * 40ms)}
-.portrait{aspect-ratio:4/5;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:hidden}
-.portrait img{width:100%;height:100%;object-fit:cover}
+.portrait{
+  width:100%;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+
+.portrait img{
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}
 .stats div{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:16px 20px}
 .stats b{display:block;font:600 36px/1.1 var(--font-head);color:var(--accent)}
@@ -183,15 +204,22 @@ body.in-cat{--tint:color-mix(in srgb,var(--accent) 3%,transparent);--grid:color-
 #logo{margin:8px 0 28px}
 #logo:empty{display:none}
 .logo{position:relative;display:inline-block;transition:transform 200ms var(--ease)}
-.logo img{display:block;width:auto;height:clamp(200px,48vh,540px);max-width:94vw;object-fit:contain}
+.logo img{display:block;width:auto;height:clamp(140px,36vh,380px);max-width:94vw;object-fit:contain}
 .logo img:last-child{position:relative}
 .logo .lg{position:absolute;left:0;top:0;opacity:0;pointer-events:none;filter:drop-shadow(0 0 16px var(--accent)) drop-shadow(0 0 48px var(--glow));transition:opacity 200ms var(--ease)}
 .logo:hover{transform:scale(1.06)}
-.logo:hover .lg{opacity:1}
+.logo:hover .lg{opacity:0.5}
 .back svg{transition:transform 200ms var(--ease)}
 .back:hover svg{transform:translateX(-3px)}
-.portrait-wrap{position:relative;transition:transform 200ms var(--ease)}
-.portrait-wrap::before{content:"";position:absolute;inset:0;border-radius:var(--radius);box-shadow:0 0 0 1px var(--accent),0 0 44px var(--glow);opacity:0;transition:opacity 200ms var(--ease)}
+.portrait-wrap{
+  position:relative;
+  width:100%;
+  max-width:var(--portrait-width);
+  transition:transform 200ms var(--ease);
+}
+.portrait-wrap::before{
+  display:none;
+}
 .portrait-wrap .portrait{position:relative}
 .portrait-wrap:hover{transform:scale(1.04)}
 .portrait-wrap:hover::before{opacity:1}
@@ -230,6 +258,9 @@ button.shot:hover img{transform:scale(1.03)}
   .shots{grid-template-columns:1fr 1fr;grid-auto-rows:150px}
   .shots>:first-child{grid-column:1/-1;grid-row:auto;height:220px}
   .game-info{grid-template-columns:1fr}
+  .portrait-wrap{
+  margin-inline:auto;
+}
 }
 @media (max-width:860px){.stats{grid-template-columns:1fr}.portrait{max-width:300px}}
 .tools{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--tool-w),1fr));gap:12px}
@@ -363,7 +394,7 @@ const SITE = {
   intro: "I build real-time game art end to end, from modelled scenes to the effects and interface that make them playable. Blender, Substance Painter, Unity, After Effects.",
   about: "Placeholder: write two or three plain sentences about yourself, what you study, and the kind of studio you want to join.",
   logo: "Asset/HEADER.png",                                      // your transparent PNG/typography, e.g. "Asset/logo.png" (shown in the hero)
-  photo: "",                                     // optional portrait, e.g. "Asset/me.jpg"
+  photo: "Asset/PROFILE.png",                                     // optional portrait, e.g. "Asset/me.jpg"
   aboutRows: [                                   // add or remove rows freely
     ["Focus",   "3D Environment Art, Game VFX, UI/UX"],
     ["Status",  "Student, open to internships"]
@@ -518,7 +549,9 @@ $("#about-text").textContent = SITE.about;
 $("#about-rows").innerHTML = SITE.aboutRows.concat([["Tools", SITE.tools.map(t => t.name).join(", ")]]).map(r => `<div><span>${esc(r[0])}</span><span>${esc(r[1])}</span></div>`).join("");
 const pieces = CATEGORIES.reduce((n, c) => n + c.works.length, 0);
 $("#stats").innerHTML = [[CATEGORIES.length, "disciplines"], [pieces, "pieces"], [SITE.tools.length, "tools"]].map(x => `<div><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
-$("#portrait").innerHTML = SITE.photo ? `<img src="${esc(SITE.photo)}" alt="Portrait of ${esc(SITE.name)}">` : `<span class="ph" style="font-size:96px">${esc(SITE.name.charAt(0))}</span>`;
+$("#portrait").innerHTML = SITE.photo
+  ? `<img src="${esc(SITE.photo)}" alt="Portrait of ${esc(SITE.name)}">`
+  : "";
 $("#mail").textContent = SITE.email;
 $("#mail").href = "mailto:" + SITE.email;
 $("#socials").innerHTML = SITE.links.map(l => `<a class="link" href="${esc(l[1])}" target="_blank" rel="noopener">${esc(l[0])}</a>`).join("");
